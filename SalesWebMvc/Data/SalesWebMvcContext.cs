@@ -9,11 +9,19 @@ namespace SalesWebMvc.Data
 {
     public class SalesWebMvcContext : DbContext
     {
-        public SalesWebMvcContext (DbContextOptions<SalesWebMvcContext> options)
-            : base(options)
+        protected readonly IConfiguration Configuration;
+
+        public SalesWebMvcContext(IConfiguration configuration)
         {
+            Configuration = configuration;
         }
 
-        public DbSet<SalesWebMvc.Models.Department> Department { get; set; } = default!;
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            var connectionString = Configuration.GetConnectionString("SalesWebMvc");
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        }
+
+        public DbSet<Department> Department { get; set; } = default!;
     }
 }
