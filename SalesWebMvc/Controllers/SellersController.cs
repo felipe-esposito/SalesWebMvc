@@ -37,12 +37,12 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Seller seller)
         {
-            if (!ModelState.IsValid)
+            if (seller.Department == null)
             {
-                var departments = await _departmentService.FindAllAsync();
-                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
-                return View(viewModel);
+                List<Department>? departments = await _departmentService.FindAllAsync();
+                seller.Department = departments.FirstOrDefault(d => d.Id == seller.DepartmentId );
             }
+
             await _sellerService.InsertAsync(seller);
             return RedirectToAction(nameof(Index));
         }
@@ -114,11 +114,10 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Seller seller)
         {
-            if (!ModelState.IsValid)
+            if (seller.Department == null)
             {
-                var departments = await _departmentService.FindAllAsync();
-                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
-                return View(viewModel);
+                List<Department>? departments = await _departmentService.FindAllAsync();
+                seller.Department = departments.FirstOrDefault(d => d.Id == seller.DepartmentId);
             }
             if (id != seller.Id)
             {
